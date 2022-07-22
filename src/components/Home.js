@@ -24,7 +24,7 @@ function Home() {
         alignItems: 'center',
         display: 'flex',
         height: '100vh',
-        backgroundColor: 'purple',
+        backgroundColor: '#bf00ff',
         color: 'white',
       }}
       initial={{ opacity: 0 }}
@@ -36,11 +36,11 @@ function Home() {
           <del>&#2352;</del>400. It takes minimum <del>&#2352;</del>400 (
           <del>&#2352;</del>300 if you're lucky) to hitch a ride from the
           AIrport in Goa to BITS and vice versa. You wanna save up? Just login
-          enter your trip details and see whether you can cram yourself with
-          10 other people in a car and break the world record.
+          enter your trip details and see whether you can cram yourself with 10
+          other people in a car and break the world record.
         </Text>
         <Button
-        marginTop={'2rem'}
+          marginTop={'2rem'}
           as={motion.button}
           initial={{ opacity: 0.7 }}
           whileHover={{

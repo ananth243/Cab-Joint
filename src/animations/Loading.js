@@ -14,7 +14,7 @@ export default function Introduction() {
   }, []);
 
   return (
-    <div
+    <motion.div
       style={{
         backgroundColor: '#bf00ff',
         display: 'flex',
@@ -22,8 +22,10 @@ export default function Introduction() {
         alignItems: 'center',
         height: '100vh',
       }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
     >
-      <motion.div
+      {/*<motion.div
         style={{
           width: '20rem',
           height: '20rem',
@@ -38,7 +40,7 @@ export default function Introduction() {
         animate={{ rotate }}
       >
         {weird}
-      </motion.div>
-    </div>
+      </motion.div>*/}
+    </motion.div>
   );
 }

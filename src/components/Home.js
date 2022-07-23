@@ -18,7 +18,7 @@ function Home() {
   }
 
   return (
-    <motion.div
+    <div
       style={{
         justifyContent: 'center',
         alignItems: 'center',
@@ -27,15 +27,17 @@ function Home() {
         backgroundColor: '#bf00ff',
         color: 'white',
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
     >
-      <Container>
+      <Container
+        as={motion.div}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
         <Text fontSize={'4xl'}>Welcome to Cab Joint.</Text>
         <Text fontSize={'xl'} marginTop={'4rem'}>
           <del>&#2352;</del>400. It takes minimum <del>&#2352;</del>400 (
           <del>&#2352;</del>300 if you're lucky) to hitch a ride from the
-          AIrport in Goa to BITS and vice versa. You wanna save up? Just login
+          Airport in Goa to BITS and vice versa. You wanna save up? Just login
           enter your trip details and see whether you can cram yourself with 10
           other people in a car and break the world record.
         </Text>
@@ -54,7 +56,7 @@ function Home() {
           Log in with BITS Email
         </Button>
       </Container>
-    </motion.div>
+    </div>
   );
 }
 

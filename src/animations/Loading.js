@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Spinner } from '@chakra-ui/react';
 
 export default function Introduction() {
   const [rotate, setRotate] = useState(0);
@@ -25,22 +26,7 @@ export default function Introduction() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      {/*<motion.div
-        style={{
-          width: '20rem',
-          height: '20rem',
-          display: 'flex',
-          color: 'white',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#0093E9',
-          backgroundImage: 'linear-gradient(160deg, #0093E9 0%, #80D0C7 100%)',
-          borderRadius: '50%',
-        }}
-        animate={{ rotate }}
-      >
-        {weird}
-      </motion.div>*/}
+      <Spinner size="xl" color="white" />
     </motion.div>
   );
 }

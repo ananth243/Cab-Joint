@@ -7,7 +7,7 @@ import { Button, Container, Text } from '@chakra-ui/react';
 
 function Home() {
   const provider = new GoogleAuthProvider();
-  const { setUser } = useAuth;
+  const { setUser } = useAuth();
 
   function signIn() {
     signInWithPopup(auth, provider)

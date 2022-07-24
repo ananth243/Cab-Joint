@@ -16,7 +16,7 @@ import {
 import { motion } from 'framer-motion';
 
 function Navbar() {
-  const { user, setUser } = useAuth();
+  const { setUser } = useAuth();
   return (
     <div
       style={{ backgroundColor: '#bf00ff', color: 'white', minHeight: '100vh' }}

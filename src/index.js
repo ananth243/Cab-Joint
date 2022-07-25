@@ -7,18 +7,9 @@ const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 
 const theme = extendTheme({
-  components: {
-    Container: {
-      size: {
-        xl: {
-          maxWidth: '100%',
-          maxHeight: '100%',
-          height: '100%',
-          width: '100%',
-        },
-      },
-    },
-  },
+  colors:{
+    purple:'#bf00ff'
+  }
 });
 
 root.render(

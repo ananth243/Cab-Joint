@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Help from './Help';
+// import { ColorModeSwitcher } from './ColorModeSwitcher';
 
 function Navbar() {
   const { user, setUser } = useAuth();
@@ -41,6 +42,7 @@ function Navbar() {
               {user.displayName}
             </Text>
           </Flex>
+          {/* <ColorModeSwitcher />*/}
           <Button
             as={motion.button}
             color="black"
@@ -64,9 +66,9 @@ function Navbar() {
             colorScheme={'telegram'}
           >
             <TabList>
-              <Tab>Arrivals</Tab>
-              <Tab>Departure</Tab>
-              <Tab>Help</Tab>
+              <Tab color='white'>Arrivals</Tab>
+              <Tab color='white'>Departure</Tab>
+              <Tab color='white'>Help</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -76,7 +78,7 @@ function Navbar() {
                 <Departure />
               </TabPanel>
               <TabPanel>
-              <Help />
+                <Help />
               </TabPanel>
             </TabPanels>
           </Tabs>

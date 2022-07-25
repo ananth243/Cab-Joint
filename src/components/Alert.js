@@ -1,6 +1,3 @@
-import { useToast } from '@chakra-ui/react';
-import React from 'react';
-
 function Alert(toast, title, description, status) {
   toast({
     title,

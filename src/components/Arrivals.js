@@ -34,7 +34,10 @@ import {
   deleteDoc,
   doc,
   limit,
+  orderBy,
+  Timestamp,
 } from 'firebase/firestore';
+import { phone } from 'phone';
 import { db } from '../config/Firebase';
 import { useAuth } from '../context/Auth';
 import { motion } from 'framer-motion';
@@ -58,17 +61,20 @@ function Arrivals() {
 
   async function addArrival() {
     try {
-      const d = new Date(date);
+      const copy = new Date(date);
+      const d = Timestamp.fromDate(copy);
       if (station === '')
         Alert(toast, 'Error', 'Please select a station', 'error');
       else if (date === '')
         Alert(toast, 'Error', 'Please select a date', 'error');
-      else if (d.getTime() < new Date().getTime())
-        Alert(toast, 'Error', 'Your ticket should be in the future', 'error');
+      else if (copy.getTime() < new Date().getTime())
+        Alert(toast, 'Error', 'Your arrival should be in the future', 'error');
+      else if (!phone(mobile).isValid)
+        Alert(toast, 'Error', 'Please enter a valid mobile number', 'error');
       else {
         const res = await addDoc(collection(db, 'arrivals'), {
           station,
-          date: d.toISOString(),
+          date: d,
           uid: user.uid,
           name: user.displayName,
           mobile,
@@ -76,7 +82,7 @@ function Arrivals() {
         });
         setArrivals([
           ...arrivals,
-          { station, date, uid: user.uid, taken: false, id: res.id },
+          { station, date: d, uid: user.uid, taken: false, id: res.id, mobile },
         ]);
         onClose();
         Alert(toast, 'Arrival Added', 'Your arrival has been added', 'success');
@@ -92,6 +98,7 @@ function Arrivals() {
       setId(null);
       onDeleteClose();
       setArrivals(arrivals.filter(a => a.id !== id));
+      setCabs(null);
       Alert(
         toast,
         'Arrival Deleted',
@@ -102,6 +109,36 @@ function Arrivals() {
       Alert(toast, 'Error', error.message, 'error');
     }
   }
+
+  useEffect(() => {
+    async function fetchCabs() {
+      try {
+        if (arrivals && arrivals.length !== 0) {
+          const start = arrivals[0].date.toDate();
+          start.setTime(start.getTime() - 2 * 60 * 60 * 1000);
+          const end = arrivals[0].date.toDate();
+          end.setTime(end.getTime() + 2 * 60 * 60 * 1000);
+          console.log(start.toString(), end.toString());
+          let cabpool = await getDocs(
+            query(
+              collection(db, 'arrivals'),
+              where('station', '==', arrivals[0].station),
+              where('date', '>=', start),
+              where('date', '<=', end),
+              orderBy('date', 'asc'),
+              limit(6)
+            )
+          );
+          let c = cabpool.docs.map(doc => doc.data());
+          c = c.filter(cab => cab.uid !== user.uid);
+          setCabs(c);
+        }
+      } catch (error) {
+        Alert(toast, 'Error', error.message, 'error');
+      }
+    }
+    fetchCabs();
+  }, [arrivals, toast, user]);
 
   useEffect(() => {
     async function fetchData() {
@@ -117,17 +154,6 @@ function Arrivals() {
           return obj;
         });
         setArrivals(arr);
-        if (arr.length !== 0) {
-          console.log(user.uid);
-          const cabpool = await getDocs(
-            collection(db, 'arrivals'),
-            where('uid', '!=', user.uid),
-            where('airport', '==', user.station),
-            limit(5)
-          );
-          const c = cabpool.docs.map(doc => doc.data());
-          setCabs(c);
-        }
       } catch (error) {
         Alert(toast, 'Error', error.message, 'error');
       }
@@ -218,13 +244,13 @@ function Arrivals() {
               </ModalFooter>
             </ModalContent>
           </Modal>
-          <motion.div
-            style={{ display: 'flex', justifyContent: 'flex-end' }}
-            transition={{ type: 'spring' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {arrivals && arrivals.length === 0 && (
+          {arrivals && arrivals.length === 0 && (
+            <motion.div
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+              transition={{ type: 'spring' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
               <Button
                 as={motion.button}
                 color="black"
@@ -234,57 +260,61 @@ function Arrivals() {
               >
                 Add Arrival
               </Button>
-            )}
-          </motion.div>
-          <TableContainer>
-            <Table size="lg" variant="striped" colorScheme="teal">
-              <TableCaption color={'white'}>Your Goa Arrivals</TableCaption>
-              <Thead>
-                <Tr>
-                  <Th color={'white'}>Station</Th>
-                  <Th color={'white'}>Date</Th>
-                  <Th color={'white'}>Mobile</Th>
-                  <Th color={'white'}>Taken</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {arrivals.map((arrival, index) => (
-                  <Tr
-                    as={motion.tr}
-                    color={index % 2 === 0 ? 'black' : 'white'}
-                    transition={{ type: 'spring' }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    key={index}
-                  >
-                    <Td>{arrival.station}</Td>
-                    <Td>{new Date(arrival.date).toLocaleString()}</Td>
-                    <Td>{arrival.mobile}</Td>
-                    <Td>
-                      {arrival.taken ? (
-                        <Checkbox
-                          onClick={() => {
-                            setId(arrival.id);
-                            onDeleteOpen();
-                          }}
-                          border={index % 2 === 0 ? 'black' : 'white'}
-                          defaultChecked
-                        />
-                      ) : (
-                        <Checkbox
-                          onChange={() => {
-                            setId(arrival.id);
-                            onDeleteOpen();
-                          }}
-                          border={index % 2 === 0 ? 'black' : 'white'}
-                        />
-                      )}
-                    </Td>
+            </motion.div>
+          )}
+          {arrivals && arrivals.length !== 0 ? (
+            <TableContainer>
+              <Table size="lg" variant="striped" colorScheme="teal">
+                <TableCaption color={'white'}>Your Goa Arrivals</TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th color={'white'}>Station</Th>
+                    <Th color={'white'}>Date</Th>
+                    <Th color={'white'}>Mobile</Th>
+                    <Th color={'white'}>Taken</Th>
                   </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </TableContainer>
+                </Thead>
+                <Tbody>
+                  {arrivals.map((arrival, index) => (
+                    <Tr
+                      as={motion.tr}
+                      color={index % 2 === 0 ? 'black' : 'white'}
+                      transition={{ type: 'spring' }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      key={index}
+                    >
+                      <Td>{arrival.station}</Td>
+                      <Td>{arrival.date.toDate().toLocaleString()}</Td>
+                      <Td>{arrival.mobile}</Td>
+                      <Td>
+                        {arrival.taken ? (
+                          <Checkbox
+                            onClick={() => {
+                              setId(arrival.id);
+                              onDeleteOpen();
+                            }}
+                            border={index % 2 === 0 ? 'black' : 'white'}
+                            defaultChecked
+                          />
+                        ) : (
+                          <Checkbox
+                            onChange={() => {
+                              setId(arrival.id);
+                              onDeleteOpen();
+                            }}
+                            border={index % 2 === 0 ? 'black' : 'white'}
+                          />
+                        )}
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Text fontSize="2xl">You have not added an arrival yet</Text>
+          )}
         </>
       )}
       {cabs && cabs.length > 0 && (
@@ -294,7 +324,7 @@ function Arrivals() {
           </Text>
           <TableContainer>
             <Table size="lg" variant="striped" colorScheme="teal">
-              <TableCaption color={'white'}>Your Goa Arrivals</TableCaption>
+              <TableCaption color={'white'}>Contact Info</TableCaption>
               <Thead>
                 <Tr>
                   <Th color={'white'}>Station</Th>
@@ -316,13 +346,16 @@ function Arrivals() {
                     <Td>{cab.station}</Td>
                     <Td>{cab.name}</Td>
                     <Td>{cab.mobile}</Td>
-                    <Td>{new Date(cab.date).toLocaleDateString()}</Td>
+                    <Td>{cab.date.toDate().toLocaleString()}</Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
           </TableContainer>
         </>
+      )}
+      {cabs && cabs.length === 0 && (
+        <Text fontSize="2xl">Couldn't find any people yet</Text>
       )}
     </>
   );

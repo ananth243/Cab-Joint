@@ -128,7 +128,6 @@ function Departures() {
           start.setTime(start.getTime() - 2 * 60 * 60 * 1000);
           const end = departures[0].date.toDate();
           end.setTime(end.getTime() + 2 * 60 * 60 * 1000);
-          console.log(start.toString(), end.toString());
           let cabpool = await getDocs(
             query(
               collection(db, 'departures'),
@@ -136,7 +135,7 @@ function Departures() {
               where('date', '>=', start),
               where('date', '<=', end),
               orderBy('date', 'asc'),
-              limit(6)
+              limit(10)
             )
           );
           let c = cabpool.docs.map(doc => doc.data());

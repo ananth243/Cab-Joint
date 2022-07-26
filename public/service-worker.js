@@ -1,7 +1,6 @@
 let CACHE_NAME = 'my-app';
 let urlsToCache = [
   '/',
-  '/completed'
 ];
 
 // Install a service worker

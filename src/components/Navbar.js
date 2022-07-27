@@ -10,7 +10,6 @@ import {
   TabPanels,
   Tabs,
   Text,
-  Container,
   Button,
   Avatar,
   Flex,
@@ -21,6 +20,14 @@ import Help from './Help';
 
 function Navbar() {
   const { user, setUser } = useAuth();
+  const stations = [
+    'Airport',
+    'Madgoan Bus Stop',
+    'Madgoan Train Station',
+    'Panjim Bus Stop',
+    'Vasco Bus Stop',
+    'Vasco Train Station',
+  ];
   return (
     <div
       style={{ backgroundColor: '#bf00ff', color: 'white', minHeight: '100vh' }}
@@ -58,31 +65,33 @@ function Navbar() {
             Logout
           </Button>
         </Flex>
-        <Container minWidth="80%" paddingTop={'1rem'}>
-          <Tabs
-            align="center"
-            border={'white'}
-            variant="soft-rounded"
-            colorScheme={'telegram'}
-          >
-            <TabList>
-              <Tab color='white'>Arrivals</Tab>
-              <Tab color='white'>Departure</Tab>
-              <Tab color='white'>Help</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                <Arrivals />
-              </TabPanel>
-              <TabPanel>
-                <Departure />
-              </TabPanel>
-              <TabPanel>
-                <Help />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Container>
+        {/*<Container minWidth="80%" paddingTop={'1rem'}>*/}
+        <Tabs
+          align="center"
+          border={'white'}
+          marginTop="1rem"
+          width="100%"
+          variant="soft-rounded"
+          colorScheme={'telegram'}
+        >
+          <TabList>
+            <Tab color="white">Arrivals</Tab>
+            <Tab color="white">Departure</Tab>
+            <Tab color="white">Help</Tab>
+          </TabList>
+          <TabPanels width="100%">
+            <TabPanel marginTop="2rem">
+              <Arrivals stations={stations} />
+            </TabPanel>
+            <TabPanel marginTop="2rem">
+              <Departure stations={stations} />
+            </TabPanel>
+            <TabPanel marginTop="2rem">
+              <Help />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+        {/*</Container>*/}
       </motion.div>
     </div>
   );

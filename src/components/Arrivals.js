@@ -9,7 +9,6 @@ import {
   Text,
   TableCaption,
   TableContainer,
-  Checkbox,
   Button,
   Modal,
   ModalOverlay,
@@ -24,6 +23,7 @@ import {
   FormHelperText,
   Input,
   useToast,
+  IconButton,
 } from '@chakra-ui/react';
 import {
   collection,
@@ -38,12 +38,13 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { phone } from 'phone';
+import { FaCheck } from 'react-icons/fa';
 import { db } from '../config/Firebase';
 import { useAuth } from '../context/Auth';
 import { motion } from 'framer-motion';
 import Alert from './Alert';
 
-function Arrivals() {
+function Arrivals({ stations }) {
   const [arrivals, setArrivals] = useState(null);
   const [station, setStation] = useState('');
   const [date, setDate] = useState('');
@@ -168,6 +169,7 @@ function Arrivals() {
           <Modal
             isOpen={isOpen}
             onClose={onClose}
+            closeOnOverlayClick={false}
             isCentered
             motionPreset="scale"
           >
@@ -181,9 +183,11 @@ function Arrivals() {
                     placeholder="Select station"
                     onChange={e => setStation(e.target.value)}
                   >
-                    <option value="Airport">Airport</option>
-                    <option value="Train">Train</option>
-                    <option value="Bus">Bus</option>
+                    {stations.map((place, id) => (
+                      <option value={place} key={id}>
+                        {place}
+                      </option>
+                    ))}
                   </Select>
                   <FormHelperText>
                     Place where you'll be arriving in
@@ -221,6 +225,7 @@ function Arrivals() {
             </ModalContent>
           </Modal>
           <Modal
+            closeOnOverlayClick={false}
             isOpen={isDeleteOpen}
             onClose={onDeleteClose}
             isCentered
@@ -245,7 +250,11 @@ function Arrivals() {
           </Modal>
           {arrivals && arrivals.length === 0 && (
             <motion.div
-              style={{ display: 'flex', justifyContent: 'flex-end' }}
+              style={{
+                width: '80%',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
               transition={{ type: 'spring' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -288,20 +297,14 @@ function Arrivals() {
                       <Td>{arrival.mobile}</Td>
                       <Td>
                         {arrival.taken ? (
-                          <Checkbox
+                          <Text>Taken</Text>
+                        ) : (
+                          <IconButton
                             onClick={() => {
                               setId(arrival.id);
                               onDeleteOpen();
                             }}
-                            border={index % 2 === 0 ? 'black' : 'white'}
-                            defaultChecked
-                          />
-                        ) : (
-                          <Checkbox
-                            onChange={() => {
-                              setId(arrival.id);
-                              onDeleteOpen();
-                            }}
+                            icon={<FaCheck />}
                             border={index % 2 === 0 ? 'black' : 'white'}
                           />
                         )}
@@ -312,7 +315,9 @@ function Arrivals() {
               </Table>
             </TableContainer>
           ) : (
-            <Text fontSize="2xl">You have not added an arrival yet</Text>
+            <Text fontSize="2xl" marginTop="2rem">
+              You have not added an arrival yet
+            </Text>
           )}
         </>
       )}
@@ -354,7 +359,9 @@ function Arrivals() {
         </>
       )}
       {cabs && cabs.length === 0 && (
-        <Text fontSize="2xl">Couldn't find any people yet</Text>
+        <Text fontSize="2xl" marginTop="1rem">
+          Couldn't find any people yet
+        </Text>
       )}
     </>
   );

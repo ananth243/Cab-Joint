@@ -9,7 +9,6 @@ import {
   Text,
   TableCaption,
   TableContainer,
-  Checkbox,
   Button,
   Modal,
   ModalOverlay,
@@ -24,6 +23,7 @@ import {
   FormHelperText,
   Input,
   useToast,
+  IconButton,
 } from '@chakra-ui/react';
 import {
   collection,
@@ -42,8 +42,9 @@ import { db } from '../config/Firebase';
 import { useAuth } from '../context/Auth';
 import { motion } from 'framer-motion';
 import Alert from './Alert';
+import { FaCheck } from 'react-icons/fa';
 
-function Departures() {
+function Departures({ stations }) {
   const [departures, setDepartures] = useState(null);
   const [station, setStation] = useState('');
   const [date, setDate] = useState('');
@@ -178,6 +179,7 @@ function Departures() {
           <Modal
             isOpen={isOpen}
             onClose={onClose}
+            closeOnOverlayClick={false}
             isCentered
             motionPreset="scale"
           >
@@ -191,9 +193,11 @@ function Departures() {
                     placeholder="Select station"
                     onChange={e => setStation(e.target.value)}
                   >
-                    <option value="Airport">Airport</option>
-                    <option value="Train">Train</option>
-                    <option value="Bus">Bus</option>
+                    {stations.map((place, index) => (
+                      <option value={place} key={index}>
+                        {place}
+                      </option>
+                    ))}
                   </Select>
                   <FormHelperText>
                     Place where you'll be departing from
@@ -234,6 +238,7 @@ function Departures() {
             isOpen={isDeleteOpen}
             onClose={onDeleteClose}
             isCentered
+            closeOnOverlayClick={false}
             motionPreset="scale"
           >
             <ModalOverlay />
@@ -255,7 +260,11 @@ function Departures() {
           </Modal>
           {departures && departures.length === 0 && (
             <motion.div
-              style={{ display: 'flex', justifyContent: 'flex-end' }}
+              style={{
+                width: '80%',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}
               transition={{ type: 'spring' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -298,20 +307,14 @@ function Departures() {
                       <Td>{departure.mobile}</Td>
                       <Td>
                         {departure.taken ? (
-                          <Checkbox
+                          <Text>Taken</Text>
+                        ) : (
+                          <IconButton
                             onClick={() => {
                               setId(departure.id);
                               onDeleteOpen();
                             }}
-                            border={index % 2 === 0 ? 'black' : 'white'}
-                            defaultChecked
-                          />
-                        ) : (
-                          <Checkbox
-                            onChange={() => {
-                              setId(departure.id);
-                              onDeleteOpen();
-                            }}
+                            icon={<FaCheck />}
                             border={index % 2 === 0 ? 'black' : 'white'}
                           />
                         )}
@@ -322,7 +325,9 @@ function Departures() {
               </Table>
             </TableContainer>
           ) : (
-            <Text fontSize="2xl">You have not added an departure yet</Text>
+            <Text fontSize="2xl" marginTop="2rem">
+              You have not added a departure yet
+            </Text>
           )}
         </>
       )}
@@ -364,7 +369,9 @@ function Departures() {
         </>
       )}
       {cabs && cabs.length === 0 && (
-        <Text fontSize="2xl">Couldn't find any people yet</Text>
+        <Text fontSize="2xl" marginTop="1rem">
+          Couldn't find any people yet
+        </Text>
       )}
     </>
   );

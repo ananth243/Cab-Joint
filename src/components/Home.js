@@ -2,7 +2,7 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { auth } from '../config/Firebase';
 import { useAuth } from '../context/Auth';
-import { Button, Container, Text } from '@chakra-ui/react';
+import { Box, Button, Container, Text } from '@chakra-ui/react';
 
 function Home() {
   const provider = new GoogleAuthProvider();
@@ -17,15 +17,13 @@ function Home() {
   }
 
   return (
-    <div
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        height: '100vh',
-        backgroundColor: '#bf00ff',
-        color: 'white',
-      }}
+    <Box
+      alignItems="center"
+      justifyContent="center"
+      backgroundColor="light"
+      height="100vh"
+      display="flex"
+      color="white"
     >
       <Container
         as={motion.div}
@@ -55,7 +53,7 @@ function Home() {
           Log in with BITS Email
         </Button>
       </Container>
-    </div>
+    </Box>
   );
 }
 

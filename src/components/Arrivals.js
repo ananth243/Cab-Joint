@@ -24,6 +24,7 @@ import {
   Input,
   useToast,
   IconButton,
+  Box,
 } from '@chakra-ui/react';
 import {
   collection,
@@ -249,12 +250,11 @@ function Arrivals({ stations }) {
             </ModalContent>
           </Modal>
           {arrivals && arrivals.length === 0 && (
-            <motion.div
-              style={{
-                width: '80%',
-                display: 'flex',
-                justifyContent: 'flex-end',
-              }}
+            <Box
+              as={motion.div}
+              width="80%"
+              display="flex"
+              justifyContent="flex-end"
               transition={{ type: 'spring' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -268,7 +268,7 @@ function Arrivals({ stations }) {
               >
                 Add Arrival
               </Button>
-            </motion.div>
+            </Box>
           )}
           {arrivals && arrivals.length !== 0 ? (
             <TableContainer>

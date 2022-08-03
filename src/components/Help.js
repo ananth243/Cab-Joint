@@ -19,7 +19,8 @@ function Help() {
         not unecessarily contact you. So be sure to check the box if you are a
         part of a cabpool.
       </Text>
-      <Highlight styles={{ marginTop: '2rem' }} query={['Note:', '2 hours']}>
+       <br />
+      <Highlight query={['Note:', '2 hours']}>
         Note: The application finds users that have departure or arrival dates
         within 2 hours of yours
       </Highlight>

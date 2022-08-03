@@ -1,20 +1,19 @@
 import { motion } from 'framer-motion';
-import { Spinner } from '@chakra-ui/react';
+import { Box, Spinner } from '@chakra-ui/react';
 
-export default function Introduction() {
+export default function Loading() {
   return (
-    <motion.div
-      style={{
-        backgroundColor: '#bf00ff',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
+    <Box
+      as={motion.div}
+      backgroundColor="light"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <Spinner size="xl" color="white" />
-    </motion.div>
+    </Box>
   );
 }

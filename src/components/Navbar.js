@@ -13,6 +13,7 @@ import {
   Button,
   Avatar,
   Flex,
+  Box,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Help from './Help';
@@ -29,10 +30,9 @@ function Navbar() {
     'Vasco Train Station',
   ];
   return (
-    <div
-      style={{ backgroundColor: '#bf00ff', color: 'white', minHeight: '100vh' }}
-    >
-      <motion.div
+    <Box backgroundColor="light" height="100vh" color="white">
+      <Box
+        as={motion.div}
         transition={{ type: 'spring' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -48,8 +48,8 @@ function Navbar() {
             <Text marginLeft="1rem" fontSize="2xl">
               {user.displayName}
             </Text>
+            {/* <ColorModeSwitcher /> */}
           </Flex>
-          {/* <ColorModeSwitcher />*/}
           <Button
             as={motion.button}
             color="black"
@@ -65,7 +65,6 @@ function Navbar() {
             Logout
           </Button>
         </Flex>
-        {/*<Container minWidth="80%" paddingTop={'1rem'}>*/}
         <Tabs
           align="center"
           border={'white'}
@@ -91,9 +90,8 @@ function Navbar() {
             </TabPanel>
           </TabPanels>
         </Tabs>
-        {/*</Container>*/}
-      </motion.div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

@@ -8,9 +8,13 @@ const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 
 const theme = extendTheme({
-  colors:{
-    purple:'#bf00ff'
-  }
+  config: {
+    initialColorMode: 'light',
+    useSystemColorMode: true,
+  },
+  colors: {
+    light: '#bf00ff',
+  },
 });
 
 root.render(

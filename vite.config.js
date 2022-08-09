@@ -4,7 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default ({ mode }) => {
   return defineConfig({
-    plugins: [react(), VitePWA()],
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        devOptions: {
+          enabled: true,
+        },
+      }),
+    ],
     define: {
       'process.env.NODE_ENV': `"${mode}"`,
     },

@@ -39,14 +39,14 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { phone } from 'phone';
-import { FaCheck } from 'react-icons/fa';
 import { db } from '../config/Firebase';
 import { useAuth } from '../context/Auth';
 import { motion } from 'framer-motion';
 import Alert from './Alert';
+import { FaCheck } from 'react-icons/fa';
 
-function Arrivals({ stations }) {
-  const [arrivals, setArrivals] = useState(null);
+function Departures({ stations }) {
+  const [departures, setDepartures] = useState(null);
   const [station, setStation] = useState('');
   const [date, setDate] = useState('');
   const [mobile, setMobile] = useState('');
@@ -61,7 +61,7 @@ function Arrivals({ stations }) {
   } = useDisclosure();
   const toast = useToast();
 
-  async function addArrival() {
+  async function addDeparture() {
     try {
       const copy = new Date(date);
       const d = Timestamp.fromDate(copy);
@@ -70,11 +70,16 @@ function Arrivals({ stations }) {
       else if (date === '')
         Alert(toast, 'Error', 'Please select a date', 'error');
       else if (copy.getTime() < new Date().getTime())
-        Alert(toast, 'Error', 'Your arrival should be in the future', 'error');
+        Alert(
+          toast,
+          'Error',
+          'Your departure should be in the future',
+          'error'
+        );
       else if (!phone(mobile).isValid)
         Alert(toast, 'Error', 'Please enter a valid mobile number', 'error');
       else {
-        const res = await addDoc(collection(db, 'arrivals'), {
+        const res = await addDoc(collection(db, 'departures'), {
           station,
           date: d,
           uid: user.uid,
@@ -82,29 +87,37 @@ function Arrivals({ stations }) {
           mobile,
           taken: false,
         });
-        setArrivals([
-          ...arrivals,
+        setDepartures([
+          ...departures,
           { station, date: d, uid: user.uid, taken: false, id: res.id, mobile },
         ]);
         onClose();
-        Alert(toast, 'Arrival Added', 'Your arrival has been added', 'success');
+        Alert(
+          toast,
+          'Departure Added',
+          'Your departure has been added',
+          'success'
+        );
+        setDate('');
+        setMobile('');
+        setStation('');
       }
     } catch (error) {
       Alert(toast, 'Error', error.message, 'error');
     }
   }
 
-  async function deleteArrival() {
+  async function deleteDeparture() {
     try {
-      await deleteDoc(doc(db, 'arrivals', id));
+      await deleteDoc(doc(db, 'departures', id));
       setId(null);
       onDeleteClose();
-      setArrivals(arrivals.filter(a => a.id !== id));
+      setDepartures(departures.filter(a => a.id !== id));
       setCabs(null);
       Alert(
         toast,
-        'Arrival Deleted',
-        'Your arrival has been deleted',
+        'Departure Deleted',
+        'Your departure has been deleted',
         'success'
       );
     } catch (error) {
@@ -115,15 +128,15 @@ function Arrivals({ stations }) {
   useEffect(() => {
     async function fetchCabs() {
       try {
-        if (arrivals && arrivals.length !== 0) {
-          const start = arrivals[0].date.toDate();
+        if (departures && departures.length !== 0) {
+          const start = departures[0].date.toDate();
           start.setTime(start.getTime() - 2 * 60 * 60 * 1000);
-          const end = arrivals[0].date.toDate();
+          const end = departures[0].date.toDate();
           end.setTime(end.getTime() + 2 * 60 * 60 * 1000);
           let cabpool = await getDocs(
             query(
-              collection(db, 'arrivals'),
-              where('station', '==', arrivals[0].station),
+              collection(db, 'departures'),
+              where('station', '==', departures[0].station),
               where('date', '>=', start),
               where('date', '<=', end),
               orderBy('date', 'asc'),
@@ -139,13 +152,13 @@ function Arrivals({ stations }) {
       }
     }
     fetchCabs();
-  }, [arrivals, toast, user]);
+  }, [departures, toast, user]);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const q = query(
-          collection(db, 'arrivals'),
+          collection(db, 'departures'),
           where('uid', '==', user.uid)
         );
         const docs = await getDocs(q);
@@ -154,7 +167,7 @@ function Arrivals({ stations }) {
           obj.id = doc.id;
           return obj;
         });
-        setArrivals(arr);
+        setDepartures(arr);
       } catch (error) {
         Alert(toast, 'Error', error.message, 'error');
       }
@@ -165,7 +178,7 @@ function Arrivals({ stations }) {
 
   return (
     <>
-      {arrivals && (
+      {departures && (
         <>
           <Modal
             isOpen={isOpen}
@@ -176,7 +189,7 @@ function Arrivals({ stations }) {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>New Arrival</ModalHeader>
+              <ModalHeader>New Departurel</ModalHeader>
               <ModalBody>
                 <FormControl>
                   <FormLabel>Station</FormLabel>
@@ -184,21 +197,21 @@ function Arrivals({ stations }) {
                     placeholder="Select station"
                     onChange={e => setStation(e.target.value)}
                   >
-                    {stations.map((place, id) => (
-                      <option value={place} key={id}>
+                    {stations.map((place, index) => (
+                      <option value={place} key={index}>
                         {place}
                       </option>
                     ))}
                   </Select>
                   <FormHelperText>
-                    Place where you'll be arriving in
+                    Place where you'll be departing from
                   </FormHelperText>
                 </FormControl>
                 <FormControl>
                   <FormLabel>Phone Number</FormLabel>
                   <Input
                     onChange={e => setMobile(e.target.value)}
-                    placeholder="Enter your phone number"
+                    placeholder="+91-855-523-8638"
                     value={mobile}
                     type="tel"
                   />
@@ -212,29 +225,29 @@ function Arrivals({ stations }) {
                     onChange={e => setDate(e.target.value)}
                     type="datetime-local"
                   />
-                  <FormHelperText>Date and Time of Arrival</FormHelperText>
+                  <FormHelperText>Date and Time of Departure</FormHelperText>
                 </FormControl>
               </ModalBody>
               <ModalFooter>
                 <Button colorScheme="blue" mr={3} onClick={onClose}>
                   Cancel
                 </Button>
-                <Button variant="ghost" onClick={addArrival}>
+                <Button variant="ghost" onClick={addDeparture}>
                   Save
                 </Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
           <Modal
-            closeOnOverlayClick={false}
             isOpen={isDeleteOpen}
             onClose={onDeleteClose}
             isCentered
+            closeOnOverlayClick={false}
             motionPreset="scale"
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Delete Arrival</ModalHeader>
+              <ModalHeader>Delete Departure</ModalHeader>
               <ModalBody>
                 If you are taken in a cabpool, this entry will be deleted. Are
                 you sure?
@@ -243,13 +256,13 @@ function Arrivals({ stations }) {
                 <Button colorScheme="blue" mr={3} onClick={onDeleteClose}>
                   Cancel
                 </Button>
-                <Button variant="ghost" onClick={deleteArrival}>
+                <Button variant="ghost" onClick={deleteDeparture}>
                   Delete
                 </Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
-          {arrivals && arrivals.length === 0 && (
+          {departures && departures.length === 0 && (
             <Box
               as={motion.div}
               width="80%"
@@ -266,14 +279,14 @@ function Arrivals({ stations }) {
                 whileHover={{ opacity: 1, scale: '1.2' }}
                 onClick={onOpen}
               >
-                Add Arrival
+                Add Departure
               </Button>
             </Box>
           )}
-          {arrivals && arrivals.length !== 0 ? (
+          {departures && departures.length !== 0 ? (
             <TableContainer>
               <Table size="lg" variant="striped" colorScheme="teal">
-                <TableCaption color={'white'}>Your Goa Arrivals</TableCaption>
+                <TableCaption color={'white'}>Your Goa departures</TableCaption>
                 <Thead>
                   <Tr>
                     <Th color={'white'}>Station</Th>
@@ -283,7 +296,7 @@ function Arrivals({ stations }) {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {arrivals.map((arrival, index) => (
+                  {departures.map((departure, index) => (
                     <Tr
                       as={motion.tr}
                       color={index % 2 === 0 ? 'black' : 'white'}
@@ -292,16 +305,16 @@ function Arrivals({ stations }) {
                       animate={{ opacity: 1 }}
                       key={index}
                     >
-                      <Td>{arrival.station}</Td>
-                      <Td>{arrival.date.toDate().toLocaleString()}</Td>
-                      <Td>{arrival.mobile}</Td>
+                      <Td>{departure.station}</Td>
+                      <Td>{departure.date.toDate().toLocaleString()}</Td>
+                      <Td>{departure.mobile}</Td>
                       <Td>
-                        {arrival.taken ? (
+                        {departure.taken ? (
                           <Text>Taken</Text>
                         ) : (
                           <IconButton
                             onClick={() => {
-                              setId(arrival.id);
+                              setId(departure.id);
                               onDeleteOpen();
                             }}
                             icon={<FaCheck />}
@@ -316,7 +329,7 @@ function Arrivals({ stations }) {
             </TableContainer>
           ) : (
             <Text fontSize="2xl" marginTop="2rem">
-              You have not added an arrival yet
+              You have not added a departure yet
             </Text>
           )}
         </>
@@ -367,4 +380,4 @@ function Arrivals({ stations }) {
   );
 }
 
-export default Arrivals;
+export default Departures;

@@ -8,9 +8,6 @@ export default ({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        devOptions: {
-          enabled: true,
-        },
       }),
     ],
     define: {

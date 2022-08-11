@@ -19,7 +19,7 @@
     "web-vitals": "^0.2.2"
   },
   "scripts": {
-    "start": "vite --port 3000",
+    "start": "vite --port 3000 --host",
     "build": "vite build --outDir build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

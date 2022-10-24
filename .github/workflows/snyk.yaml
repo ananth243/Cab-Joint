@@ -1,0 +1,11 @@
+name: Workflow to test vulnerabilities in pushed code
+on: push
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
